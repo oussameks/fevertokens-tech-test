@@ -1,0 +1,28 @@
+name: Pipeline ci/cd
+
+on: [push] 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_IMAGE_NAME: my-html  
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Dockerhub login
+        run: echo ${{ secrets.DOCKER_PASSWORD  }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Build docker image
+        run: |
+          docker build -t $DOCKER_IMAGE_NAME .
+      
+     
+
+      - name: Tag and push docker image
+        run: |
+          docker tag $DOCKER_IMAGE_NAME:latest ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKER_IMAGE_NAME:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKER_IMAGE_NAME:latest
