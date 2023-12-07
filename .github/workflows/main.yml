@@ -1,13 +1,16 @@
-name: Pipeline ci/cd
+name: Docker CI/CD
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     env:
-      DOCKER_IMAGE_NAME: my-html  
+      DOCKER_IMAGE_NAME: my-html
 
     steps:
       - name: Checkout code
@@ -36,12 +39,9 @@ jobs:
 
       - name: Configure SSH keys
         run: |
-             echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > id_ed25519
-             chmod 600 id_ed25519
-
-
+          echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > id_ed25519
+          chmod 600 id_ed25519
 
       - name: Deploy application to Docker Swarm
         run: |
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} "docker stack deploy --compose-file docker-compose.yml my_app"
-
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} "docker stack deploy --compose-file docker-compose.yml my_app"
