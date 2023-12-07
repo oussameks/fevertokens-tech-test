@@ -38,8 +38,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Configure SSH keys
-        run: chmod 600 .ssh/id_ed25519
-     #     echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > .ssh/id_ed25519
+        run: 
+          echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > .ssh/id_ed25519
+          chmod 600 .ssh/id_ed25519
           
 
       - name: Deploy application to Docker Swarm
