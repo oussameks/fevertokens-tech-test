@@ -40,10 +40,10 @@ jobs:
     - name: Configure SSH keys
       run: |
         mkdir -p ~/.ssh
-        echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
-        ssh-keyscan -H ${{ secrets.SWARM_MANAGER_IP }} >> ~/.ssh/known_hosts
+        echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > /.ssh/id_ed25519
+        chmod 600 /.ssh/id_ed25519
+        ssh-keyscan -H ${{ secrets.SWARM_MANAGER_IP }} >> /.ssh/known_hosts
 
     - name: Deploy application to Docker Swarm
       run: |
-        ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} "docker stack deploy --compose-file docker-compose.yml my_app"
+        ssh -i /.ssh/id_ed25519 ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} "docker stack deploy --compose-file docker-compose.yml my_app"
