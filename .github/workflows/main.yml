@@ -36,7 +36,7 @@ jobs:
 
       - name: Configure SSH keys
         run: |
-             echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > /c/Users/oussa/.ssh/id_ed25519
+             echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > id_ed25519
              chmod 600 /c/Users/oussa/.ssh/id_ed25519
 
 
