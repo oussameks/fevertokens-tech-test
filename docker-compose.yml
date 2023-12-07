@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+  web:
+    image: hamzabrs/my-html:latest
+    ports:
+      - "80:80"
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
