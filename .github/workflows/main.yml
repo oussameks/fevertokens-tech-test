@@ -44,4 +44,5 @@ jobs:
 
       - name: Deploy application to Docker Swarm
         run: |
-          ssh -i .ssh/id_ed25519 ${{ secrets.SWARM_MANAGER_IP }} "docker stack deploy --compose-file docker-compose.yml my_app"
+          ssh -i .ssh/id_ed25519 ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} "docker stack deploy --compose-file docker-compose.yml my_app"
+
