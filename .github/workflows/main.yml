@@ -49,4 +49,4 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker stack deploy --compose-file docker-compose.yml your-stack-name
+            docker stack deploy --compose-file docker-compose.yml my-html
