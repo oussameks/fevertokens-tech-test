@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   web:
-    image: hamzabrs/my-html:latest
+    image: oussameks/my-html:latest
     ports:
       - "80:80"
     deploy:
