@@ -34,16 +34,19 @@ jobs:
     needs: build
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Configure SSH keys
-        run: 
-          echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > .ssh/id_ed25519
-          chmod 600 .ssh/id_ed25519
-          
-
-      - name: Deploy application to Docker Swarm
+      - name: Debug Secrets
         run: |
-          ssh -i .ssh/id_ed25519 ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} "docker stack deploy --compose-file docker-compose.yml my_app"
+          echo "DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}"
+          echo "DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}"
+          echo "SWARM_HOST: ${{ secrets.SWARM_MANAGER_IP }}"
+          echo "SWARM_USERNAME: ${{ secrets.SSH_USERNAME }}"
+          echo "SWARM_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}"
 
+      - name: Deploy to Docker Swarm
+        uses: actions/checkout@v2
+        with:
+          host: ${{ secrets.SWARM_MANAGER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker stack deploy --compose-file docker-compose.yml your-stack-name
