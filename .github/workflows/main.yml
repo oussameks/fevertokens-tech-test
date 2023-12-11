@@ -37,7 +37,7 @@ jobs:
       - name: Copy Docker Compose file to remote server
         run: |
           scp -o StrictHostKeyChecking=no -i /tmp/private_key docker-compose.yml "${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }}:/tmp" || true
-          ssh -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'chmod +x /tmp/docker-compose.yml && ls -l /tmp && cat /tmp/docker-compose.yml'
+          ssh -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'chmod +x /tmp/docker-compose.yml && ls -l /tmp && cat /tmp/docker-compose.yml' || true
 
       - name: Connect to Remote Server and Deploy
         run: |
