@@ -29,10 +29,12 @@ jobs:
 
       - name: Set up SSH and Deploy
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/private_key
-          chmod 600 /tmp/private_key
+         echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/private_key
+         chmod 600 /tmp/private_key
+         eval "$(ssh-agent -s)"
+         ssh-add /tmp/private_key
         env:
-          SSH_AUTH_SOCK: /tmp/ssh-agent.sock
+         SSH_AUTH_SOCK: /tmp/ssh-agent.sock
 
       - name: Copy Docker Compose file to remote server
         run: |
