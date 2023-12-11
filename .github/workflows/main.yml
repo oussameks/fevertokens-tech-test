@@ -31,12 +31,14 @@ jobs:
         uses: webfactory/ssh-agent@v0.6.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh-agent.sock
 
       - name: Copy Docker Compose file to remote server
         run: |
           scp -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" docker-compose.yml "${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }}:/tmp" || true
-          ssh -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'chmod +x /tmp/docker-compose.yml && ls -l /tmp && cat /tmp/docker-compose.yml'
+          ssh -o StrictHostKeyChecking=no -S /tmp/ssh-agent.sock ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'chmod +x /tmp/docker-compose.yml && ls -l /tmp && cat /tmp/docker-compose.yml'
 
       - name: Connect to Remote Server and Deploy
         run: |
-          ssh -v -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'cd /tmp && docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
+          ssh -v -o StrictHostKeyChecking=no -S /tmp/ssh-agent.sock ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'cd /tmp && docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
