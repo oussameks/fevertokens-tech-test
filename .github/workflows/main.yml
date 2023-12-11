@@ -34,7 +34,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }} 
 
       - name: Copy Docker Compose file to remote server
-        run: scp -o StrictHostKeyChecking=no -o LogLevel=DEBUG docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} /deploy || true
+        run: scp -o StrictHostKeyChecking=no -o LogLevel=DEBUG docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} ~/deploy || true
         env:
           SSH_AUTH_SOCK: /tmp/ssh-ed25519/agent.1845
           SSH_AGENT_PID: 1846
@@ -44,4 +44,4 @@ jobs:
           # Replace 'your_username' and 'your_server_address' with your SSH username and server address
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/private_key
           chmod 600 /tmp/private_key
-          ssh -v -i /tmp/private_key  ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'cd /deploy docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
+          ssh -v -i /tmp/private_key  ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'cd ~/deploy docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
