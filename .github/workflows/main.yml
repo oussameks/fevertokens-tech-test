@@ -20,8 +20,7 @@ jobs:
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Build docker image
-        run: |
-          docker build -t $DOCKER_IMAGE_NAME .
+        run: docker build -t $DOCKER_IMAGE_NAME .
 
       - name: Tag and push docker image
         run: |
@@ -31,21 +30,11 @@ jobs:
       - name: Set up SSH and Deploy
         uses: webfactory/ssh-agent@v0.6.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }} 
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Copy Docker Compose file to remote server
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/private_key
-          
-          chmod 600 /tmp/private_key
-          scp -i /tmp/private_key docker-compose.yml "${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }}:/tmp" || true
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh-ed25519/agent.1845
-          SSH_AGENT_PID: 1846
+        run: scp -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" docker-compose.yml "${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }}:/tmp" || true
 
       - name: Connect to Remote Server and Deploy
         run: |
-          # Replace 'your_username' and 'your_server_address' with your SSH username and server address
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/private_key
-          chmod 600 /tmp/private_key
-          ssh -v -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'cd /tmp && docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
+          ssh -v -o StrictHostKeyChecking=no -i "$SSH_PRIVATE_KEY" ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'cd /tmp && docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
