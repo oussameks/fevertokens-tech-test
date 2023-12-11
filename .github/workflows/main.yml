@@ -6,9 +6,9 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest 
- 
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
     env:
       DOCKER_IMAGE_NAME: my-html
 
@@ -28,14 +28,7 @@ jobs:
           docker tag $DOCKER_IMAGE_NAME:latest ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE_NAME:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE_NAME:latest
 
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up SSH
+      - name: Set up SSH and Deploy
         uses: webfactory/ssh-agent@v0.6.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }} 
@@ -43,8 +36,9 @@ jobs:
       - name: Copy Docker Compose file to remote server
         run: scp -o StrictHostKeyChecking=no -o LogLevel=DEBUG docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }}:/tmp || true
         env:
-         SSH_AUTH_SOCK: /tmp/ssh-ed25519/agent.1845
-         SSH_AGENT_PID: 1846
+          SSH_AUTH_SOCK: /tmp/ssh-ed25519/agent.1845
+          SSH_AGENT_PID: 1846
+
       - name: Connect to Remote Server and Deploy
         run: |
           # Replace 'your_username' and 'your_server_address' with your SSH username and server address
