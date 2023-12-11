@@ -36,33 +36,29 @@ jobs:
         env:
          SSH_AUTH_SOCK: /tmp/ssh-agent.sock
 
-      - name: Copy Docker Compose file to remote server
-        run: |
-          scp -o StrictHostKeyChecking=no -i /tmp/private_key docker-compose.yml "${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }}:/tmp" || true
-          ssh -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'chmod +x /tmp/docker-compose.yml && ls -l /tmp && cat /tmp/docker-compose.yml' || true
-
       - name: Connect to Remote Server and Docker Login
         run: |
-         ssh -v -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} << 'EOF'
-         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-         EOF
+            ssh -v -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}'
+            exit_code=$?
+            echo $exit_code > exit_code_login.txt
+        shell: /bin/bash
 
       - name: Check Docker Login Output
-        run: cat login_output.txt
+        run: cat exit_code_login.txt
         if: failure()
 
       - name: Copy Docker Compose file to remote server
         run: |
-          scp -o StrictHostKeyChecking=no -i /tmp/private_key docker-compose.yml "${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }}:/tmp" || true
-          ssh -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'chmod +x /tmp/docker-compose.yml && ls -l /tmp && cat /tmp/docker-compose.yml' || true
+         scp -o StrictHostKeyChecking=no -i /tmp/private_key docker-compose.yml "${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }}:/tmp" || true
+         ssh -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'chmod +x /tmp/docker-compose.yml && ls -l /tmp && cat /tmp/docker-compose.yml' || true
 
       - name: Connect to Remote Server and Deploy
         run: |
-         ssh -v -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} << 'EOF'
-         docker stack deploy -c /tmp/docker-compose.yml myapp
-         EOF
+         ssh -v -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'docker stack deploy -c /tmp/docker-compose.yml myapp'
+         exit_code=$?
+         echo $exit_code > exit_code_deploy.txt
+         shell: /bin/bash
 
       - name: Check Deploy Output
-        run: cat deploy_output.txt
+        run: cat exit_code_deploy.txt
         if: failure()
-
