@@ -42,3 +42,5 @@ jobs:
       - name: Connect to Remote Server and Deploy
         run: |
           ssh -v -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} && cd /tmp && docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
+          sleep 10  # Add a delay to allow time for services to start
+          cat deployment_output.txt
