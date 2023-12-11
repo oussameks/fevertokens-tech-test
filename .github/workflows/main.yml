@@ -39,7 +39,7 @@ jobs:
 
       - name: Dockerhub login on Remote Server
         run: |
-          ssh -o StrictHostKeyChecking=no -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} -p 8022 'docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}'
+          ssh -o StrictHostKeyChecking=no -i /tmp/private_key -o KexAlgorithms=diffie-hellman-group-exchange-sha256 ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} -p 8022 'docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}'
 
       - name: Connect to Remote Server and Deploy
         run: |
