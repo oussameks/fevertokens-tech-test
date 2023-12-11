@@ -44,4 +44,4 @@ jobs:
           # Replace 'your_username' and 'your_server_address' with your SSH username and server address
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/private_key
           chmod 600 /tmp/private_key
-          ssh -v -i /tmp/private_key  ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'cd /tmp docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
+          ssh -v -i /tmp/private_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SWARM_MANAGER_IP }} 'cd /tmp && docker stack deploy -c docker-compose.yml myapp' 2>&1 | tee deployment_output.txt
